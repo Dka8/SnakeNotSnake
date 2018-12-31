@@ -14,6 +14,7 @@ namespace SnakeNotSnake
 
 
             Console.ReadKey();
+            Console.ReadKey();
         }
     }
 }
