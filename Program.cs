@@ -32,16 +32,23 @@ namespace ConsoleApp1
             entity.Position = current;
         }
 
-        public void MoveSpace(Transformable entity)
+        public void MoveSpace(Transformable entity, float PositionY)
         {
             var current = entity.Position;
-            current.Y = 500;
+            current.Y = PositionY;
             entity.Position = current;
         }
         public void MoveStop(Transformable entity)
         {
             var current = entity.Position;
             current.Y = 0;
+            entity.Position = current;
+        }
+
+        public void MoveStopX(Transformable entity)
+        {
+            var current = entity.Position;
+            current.X = 200;
             entity.Position = current;
         }
     }
@@ -63,7 +70,7 @@ namespace ConsoleApp1
             }
             if (args.Code == Keyboard.Key.Space || args.Code == Keyboard.Key.Down || args.Code == Keyboard.Key.S)
             {
-                _moveEngine.MoveSpace(_rectangle[_rectangle.Count - 1]);
+                _moveEngine.MoveSpace(_rectangle[_rectangle.Count - 1], Space());
             }
            
         }
@@ -75,14 +82,22 @@ namespace ConsoleApp1
             _rectangle[_rectangle.Count-1].FillColor = Color.Cyan;
             timer.Elapsed += (sender, args) => 
             {
-                if (_rectangle[_rectangle.Count - 1].Position.Y >= 500)
+                if (TouchCheck())
                 {
                     _rectangle.Add(new RectangleShape(new Vector2f(SizeDefines.SIZE, SizeDefines.SIZE)));
                     _rectangle[_rectangle.Count - 1].FillColor = Color.Cyan;
                 }
                 else
                 {
-                    _moveEngine.MoveDown(_rectangle[_rectangle.Count - 1]);
+                    if (_rectangle[_rectangle.Count - 1].Position.X >= 200)//хз как отключить движениие вправо
+                    {
+                        _moveEngine.MoveStopX(_rectangle[_rectangle.Count - 1]);
+                        _moveEngine.MoveDown(_rectangle[_rectangle.Count - 1]);
+                    }
+                    else
+                    {
+                        _moveEngine.MoveDown(_rectangle[_rectangle.Count - 1]);
+                    }
                 }
             };
             window.KeyPressed += KeyHandler;
@@ -94,6 +109,38 @@ namespace ConsoleApp1
             {
                 target.Draw(_rectangle[i]);
             }
+        }
+
+        public bool TouchCheck()
+        {
+            if (_rectangle[_rectangle.Count - 1].Position.Y >= 500)
+            {
+                return true;
+            }
+            else
+            {
+                for (int i = 0; i < _rectangle.Count - 1; i++)
+                {
+                    if (((_rectangle[_rectangle.Count - 1].Position.X == _rectangle[i].Position.X) && (_rectangle[_rectangle.Count - 1].Position.Y == _rectangle[i].Position.Y - 10 || _rectangle[_rectangle.Count - 1].Position.Y == _rectangle[i].Position.Y + 10))||
+                            ((_rectangle[_rectangle.Count - 1].Position.X == _rectangle[i].Position.X - 10 || _rectangle[_rectangle.Count - 1].Position.X == _rectangle[i].Position.X + 10) && (_rectangle[_rectangle.Count - 1].Position.Y == _rectangle[i].Position.Y)))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }            
+        }
+
+        public float Space()
+        {
+            for (int i = _rectangle.Count - 2; i >= 0; i--)
+            {
+                if (_rectangle[_rectangle.Count - 1].Position.X == _rectangle[i].Position.X)
+                {
+                    return _rectangle[i].Position.Y-10;
+                }
+            }
+            return 500;
         }
     }
 
