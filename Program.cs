@@ -4,6 +4,7 @@ using System.Timers;
 using SFML.Window;
 using SFML.Graphics;
 using SFML.System;
+using System.Collections.Generic;
 using Color = SFML.Graphics.Color;
 
 namespace ConsoleApp1
@@ -13,7 +14,7 @@ namespace ConsoleApp1
         public void MoveDown(Transformable entity)
         {
             var current = entity.Position;
-            current.Y += 10;
+            current.Y += 5;
             entity.Position = current;
         }
 
@@ -40,29 +41,29 @@ namespace ConsoleApp1
         public void MoveStop(Transformable entity)
         {
             var current = entity.Position;
-            current.Y = 500;
+            current.Y = 0;
             entity.Position = current;
         }
     }
 
     class Field : Drawable
     {
-        private readonly RectangleShape _rectangle;
+        private readonly List<RectangleShape> _rectangle= new List<RectangleShape>();
         private readonly MoveEngine _moveEngine;
 
         private void KeyHandler(object sender, KeyEventArgs args)
         {
             if (args.Code == Keyboard.Key.Right || args.Code == Keyboard.Key.D)
             {
-                _moveEngine.MoveRight(_rectangle);
+                _moveEngine.MoveRight(_rectangle[_rectangle.Count - 1]);
             }
             if (args.Code == Keyboard.Key.Left || args.Code == Keyboard.Key.A)
             {
-                _moveEngine.MoveLeft(_rectangle);
+                _moveEngine.MoveLeft(_rectangle[_rectangle.Count - 1]);
             }
             if (args.Code == Keyboard.Key.Space || args.Code == Keyboard.Key.Down || args.Code == Keyboard.Key.S)
             {
-                _moveEngine.MoveSpace(_rectangle);
+                _moveEngine.MoveSpace(_rectangle[_rectangle.Count - 1]);
             }
            
         }
@@ -70,18 +71,18 @@ namespace ConsoleApp1
         public Field(RenderWindow window, Timer timer, MoveEngine moveEngine)
         {
             _moveEngine = moveEngine;
-            _rectangle
-            = new RectangleShape(new Vector2f(SizeDefines.SIZE, SizeDefines.SIZE));
-            _rectangle.FillColor = Color.Cyan;
+            _rectangle.Add(new RectangleShape(new Vector2f(SizeDefines.SIZE, SizeDefines.SIZE)));
+            _rectangle[_rectangle.Count-1].FillColor = Color.Cyan;
             timer.Elapsed += (sender, args) => 
             {
-                if (_rectangle.Position.Y >= 500)
+                if (_rectangle[_rectangle.Count - 1].Position.Y >= 500)
                 {
-                    _moveEngine.MoveStop(_rectangle);
+                    _rectangle.Add(new RectangleShape(new Vector2f(SizeDefines.SIZE, SizeDefines.SIZE)));
+                    _rectangle[_rectangle.Count - 1].FillColor = Color.Cyan;
                 }
                 else
                 {
-                    _moveEngine.MoveDown(_rectangle);
+                    _moveEngine.MoveDown(_rectangle[_rectangle.Count - 1]);
                 }
             };
             window.KeyPressed += KeyHandler;
@@ -89,7 +90,10 @@ namespace ConsoleApp1
 
         public void Draw(RenderTarget target, RenderStates states)
         {
-            target.Draw(_rectangle);
+            for (int i = 0; i < _rectangle.Count; i++)
+            {
+                target.Draw(_rectangle[i]);
+            }
         }
     }
 
