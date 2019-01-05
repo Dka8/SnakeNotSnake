@@ -1,4 +1,5 @@
 ﻿using SFML.System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Snake.UI
 {
@@ -6,13 +7,17 @@ namespace Snake.UI
     {
         static void Main(string[] args)
         {
+            var services = new ServiceCollection();
+            services.AddScoped<IDrawableProvider, InMemoryDrawableProvider>();
+            var provider = services.BuildServiceProvider();
+            
             var window = new Window("Snake", new Vector2u(800,600));
-            var provider = new InMemoryDrawableProvider();
             
             while (window.IsOpen)
             {
                 window.DispatchEvents();
-                window.Render(provider);
+                var drProvider = provider.GetService<IDrawableProvider>();
+                window.Render(drProvider);
             }
         }
     }
