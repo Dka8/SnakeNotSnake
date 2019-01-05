@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using SFML.System;
 
 namespace Snake.UI
 {
     public interface IPositionProvider
     {
-        Vector2u GetPosition(int index);
+        IEnumerable<Vector2u> GetSnakePosition();
     }
 }
