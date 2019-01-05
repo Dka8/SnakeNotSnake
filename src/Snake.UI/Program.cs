@@ -8,7 +8,9 @@ namespace Snake.UI
         static void Main(string[] args)
         {
             var services = new ServiceCollection();
-            services.AddScoped<IDrawableProvider, InMemoryDrawableProvider>();
+            services.AddScoped<IDrawableProvider, SnakePiecesProvider>();
+            services.AddScoped<IPositionProvider, SimplePositionProvider>();
+            
             var provider = services.BuildServiceProvider();
             
             var window = new Window("Snake", new Vector2u(800,600));
