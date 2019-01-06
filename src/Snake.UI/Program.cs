@@ -1,19 +1,39 @@
-﻿using SFML.System;
+﻿using System;
+using SFML.System;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Snake.UI
 {
+    public static class WindowServiceCollectionExtention
+    {
+        public static IServiceCollection AddWindowService(
+            this IServiceCollection collection,
+            Action<WindowOptions> setupAction)
+        {
+            collection.Configure(setupAction);
+            return collection.AddSingleton<IKeyPressedEventProvider, Window>();
+        }
+    }
+    
     class Program
     {
         static void Main(string[] args)
         {
             var services = new ServiceCollection();
-            services.AddScoped<IDrawableProvider, SnakePiecesProvider>();
-            services.AddScoped<IPositionProvider, SimplePositionProvider>();
+            services.AddOptions();
+            
+            services.AddSingleton<IDrawableProvider, SnakePiecesProvider>();
+            services.AddSingleton<IPositionProvider, SimplePositionProvider>();
+            services.AddWindowService(options =>
+            {
+                options.Title = "Snake";
+                options.Size = new Vector2u(800,600);
+            });
+            services.AddSingleton<IKeyPressedEventProvider, Window>();
             
             var provider = services.BuildServiceProvider();
-            
-            var window = new Window("Snake", new Vector2u(800,600));
+
+            var window = provider.GetService<IKeyPressedEventProvider>() as Window;
             
             while (window.IsOpen)
             {
