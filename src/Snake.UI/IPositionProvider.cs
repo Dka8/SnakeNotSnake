@@ -5,6 +5,6 @@ namespace Snake.UI
 {
     public interface IPositionProvider
     {
-        IEnumerable<Vector2u> GetSnakePosition();
+        IEnumerable<Vector2u> Position { get; set; }
     }
 }

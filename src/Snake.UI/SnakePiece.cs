@@ -16,7 +16,7 @@ namespace Snake.UI
         }
         public void Draw(RenderTarget target, RenderStates states)
         {
-            foreach (var position in _positionProvider.GetSnakePosition())
+            foreach (var position in _positionProvider.Position)
             {
                 _piece.Position = new Vector2f(position.X * 20, position.Y * 20);
                 target.Draw(_piece);

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
 using SFML.System;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,10 +14,10 @@ namespace Snake.UI
             Action<WindowOptions> setupAction)
         {
             collection.Configure(setupAction);
-            return collection.AddSingleton<IKeyPressedEventProvider, Window>();
+            return collection.AddSingleton<Window>();
         }
     }
-    
+
     class Program
     {
         static void Main(string[] args)
@@ -24,17 +27,19 @@ namespace Snake.UI
             
             services.AddSingleton<IDrawableProvider, SnakePiecesProvider>();
             services.AddSingleton<IPositionProvider, SimplePositionProvider>();
+            services.AddSingleton<IUpdateEventProvider, UpdateEventTimerProvider>();
+            services.AddSingleton<IKeyPressedEventProvider, KeyPressedEventProvider>();
+            services.AddSingleton<IMoveCommandFactory, MoveCommandFactory>();
+            services.AddSingleton<IMoveEngine, MoveEngine>();
             services.AddWindowService(options =>
             {
                 options.Title = "Snake";
                 options.Size = new Vector2u(800,600);
             });
-            services.AddSingleton<IKeyPressedEventProvider, Window>();
             
             var provider = services.BuildServiceProvider();
 
-            var window = provider.GetService<IKeyPressedEventProvider>() as Window;
-            
+            var window = provider.GetService<Window>();
             while (window.IsOpen)
             {
                 window.DispatchEvents();

@@ -12,7 +12,7 @@ namespace Snake.UI
         public Vector2u Size { get; set; }
     }
     
-    public class Window : IKeyPressedEventProvider
+    public class Window
     {
         private readonly RenderWindow _window;
 
@@ -23,7 +23,6 @@ namespace Snake.UI
             _window = new RenderWindow(videoMode, options.Value.Title, style);
 
             _window.Closed += (sender, args) => _window.Close();
-            _window.KeyPressed += OnKeyPressed;
         }
 
         public void Render(IDrawableProvider provider)
@@ -43,11 +42,10 @@ namespace Snake.UI
 
         public bool IsOpen => _window.IsOpen;
 
-        public event EventHandler<KeyEventArgs> KeyPressed;
-
-        private void OnKeyPressed(object sender, KeyEventArgs args)
+        public event EventHandler<KeyEventArgs> KeyPressed
         {
-            KeyPressed?.Invoke(sender, args);
+            add => _window.KeyPressed += value;
+            remove => _window.KeyPressed -= value;
         }
     }
 }
